@@ -193,7 +193,7 @@ leaking internal structure into what should read as the agent's own voice.
 
 ## 4. The gate ★
 
-The full rationale is in the [README](README.md#4-why-this-is-different-silence-is-a-decision-not-an-absence).
+The full rationale is in the [README](README.md#-how-it-works-silence-is-a-decision).
 The architectural points:
 
 **The model and the policy have different jobs.** The model establishes facts;
