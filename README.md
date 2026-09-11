@@ -8,7 +8,11 @@ only when staying quiet would cost a student something they cannot get back —
 and then does the thing rather than describing it.
 
 Built for the **AWS Agents for Humans** hackathon, Good Neighbor track.
-[Architecture](ARCHITECTURE.md)
+
+![Compass architecture](docs/architecture.png)
+
+[Architecture](ARCHITECTURE.md) · [Devpost copy](docs/DEVPOST.md) ·
+[Demo video script](docs/VIDEO.md) · [Write-ups](docs/blog/)
 
 ---
 

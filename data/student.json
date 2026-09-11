@@ -133,10 +133,10 @@
       "blocks_registration": true,
       "resolvable_by": "File a degree plan that satisfies all programme requirements, then obtain advisor approval (3 working days).",
       "action": "file_degree_plan",
-      "cleared": false
+      "cleared": true
     }
   ],
-  "degree_plan_filed": false,
+  "degree_plan_filed": true,
   "specialisation": "quantitative",
   "draft_plan": {
     "econ_core": [
@@ -154,10 +154,10 @@
       "ECON30010"
     ],
     "general_elective": [
-      "ECON10740",
       "SOC10020",
       "PHIL10020",
-      "LANG10010"
+      "LANG10010",
+      "ENGR10010"
     ]
   }
 }
