@@ -240,6 +240,46 @@ agentcore deploy --yes
 agentcore invoke "when is the W deadline?"
 ```
 
+`agentcore invoke` wraps whatever you give it in `{"prompt": ...}`, so it reaches
+the conversational half of the contract and only that. The other two actions need
+their payload to arrive intact, which is what `compass.remote` is for — a small
+client over `InvokeAgentRuntime` that speaks the same four verbs as the local
+CLI:
+
+```bash
+uv pip install -e ".[remote]"     # only if your credentials come from `aws login`
+python -m compass.remote --json > sweep.json      # sweep the deployed agent
+python -m compass.remote                          # read the report
+python -m compass.remote --decide 2 --option 1 --from sweep.json
+python -m compass.remote --ask "when is the W deadline?"
+```
+
+A real run, against the deployed endpoint:
+
+```text
+2026-09-28 — 2 finding(s): 2 surfaced, 0 handled, 0 deliberately passed over.
+
+  [1] surfaced: Overdue library items are blocking your registration and escalate on 5 October
+          by 2026-10-05 (7 day(s) left)  ·  severity critical  ·  confidence 0.95
+          -> 1. return-in-person: Return the three items in person
+          -> 2. pay-charge: Authorise the EUR 45.00 replacement charge
+          choose with: --decide 1 --option 1
+```
+
+and after `--decide 1 --option 1`, `[LIB-2026-B6E2B7] Recorded the items as
+returned and cleared the library hold.` Re-sweeping in the same session returns
+**one** finding instead of two: the deployed agent really did the work, and the
+state it changed is still changed.
+
+Findings are addressed by the number the report printed, not by their id, and
+options the same way. Ids are written by the model on each sweep and so differ
+between runs; the position cannot move, because the report and the client walk
+the same list in the same order.
+
+A session is the unit of state, so a `decide` has to name the session its `sweep`
+ran in — every call prints the one it used, and `--session` takes it back.
+Without one you get a fresh session, which starts from the shipped dataset.
+
 The runtime has **no writable storage**, so the first invocation of a session
 copies the shipped dataset into scratch and points `COMPASS_DATA_DIR` at it.
 Within a session the writes are real — registering for a module takes a seat,
@@ -271,10 +311,30 @@ a value rather than an exception, distinguishing a *bad request* from a
 *refusal by the rules*. A refusal is a result worth showing the student, not a
 500.
 
+### Which model answers
+
+Compass supports three backends and picks one from `COMPASS_PROVIDER`:
+`bedrock`, `openai`, or `deepseek`. The deployed runtime here runs
+**`deepseek`**, with the API key read at cold start from an SSM `SecureString`
+that only the runtime's execution role may read — the repository contains the
+parameter's *name*, never its value. That is the same reason the model backend is
+configurable at all: a deployed agent needs a credential the repository must not
+hold, and a project that hard-coded one backend would have nowhere to put it.
+
+`bedrock` is the first-class path and what this was built against. The account
+used for this deployment is under a new-account restriction on the Bedrock data
+plane — `ValidationException: Access to Bedrock models is not allowed for this
+account`, reported as `Error 002` — and isolating it showed the restriction is
+account-wide rather than model-specific: Amazon Nova and Titan fail identically,
+in every region, under the account root's own credentials. Rather than let that
+decide whether the demo works, the runtime was pointed at a different provider,
+which is what the abstraction was for. Switching back is `COMPASS_PROVIDER` and
+a redeploy; the code path is the same one.
+
 ## 9. Tests
 
 ```bash
-python -m pytest tests -q      # 114 passed, no network, ~4s
+python -m pytest tests -q      # 132 passed, no network, ~4s
 ```
 
 The suite never calls a model and never touches the checked-in `data/`: each
@@ -302,6 +362,11 @@ Two of the files are worth pointing at:
   where it is actually load-bearing and the integration half is labelled as the
   smoke test it is.
 
+- **`test_remote.py`** pins the wire contract between the deployed agent and
+  `compass.remote`. One side builds that JSON as a dict and the other reads it as
+  a dict, so nothing type-checks the seam; the tests assert the exact payload
+  each verb puts on the wire, which is what a rename on either side would break.
+
 ## 10. What Compass will not do
 
 Stated as limits, because a system like this is defined by its refusals:
@@ -322,8 +387,11 @@ Stated as limits, because a system like this is defined by its refusals:
 
 **Strands Agents SDK** for the agents and tools · **FastMCP** for the school-data
 server · **Amazon Bedrock AgentCore Runtime** for deployment · **Amazon
-Bedrock** for the deployed model · **FastAPI + SSE** for the decision card ·
-**Pydantic v2** for the structured contract between the model and the gate.
+Bedrock** as the first-class model backend, with a pluggable provider so the
+deployed agent can also run against any OpenAI-compatible endpoint ·
+**AWS Systems Manager Parameter Store** for the deployed credential ·
+**FastAPI + SSE** for the decision card · **Pydantic v2** for the structured
+contract between the model and the gate.
 
 Built with **Claude Code**.
 

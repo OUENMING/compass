@@ -1,6 +1,6 @@
 # Testing an Agents for Humans entry without ever calling a model
 
-*114 tests, no network, four seconds — and the three bugs they caught.*
+*132 tests, no network, four seconds — and the three bugs they caught.*
 
 ---
 
@@ -178,7 +178,7 @@ parent's `sys.path`**:
 args=["-m", "compass.tools.school_mcp_server"]
 ```
 
-So patching `sys.path` alone passes 113 local tests and fails on the first real
+So patching `sys.path` alone passes every local test and fails on the first real
 invocation. The fix is to export `PYTHONPATH` too. So I built the bundle layout
 in `tmp_path` and ran the child in a stripped environment:
 
@@ -291,6 +291,39 @@ is what makes the recorded demo and the test suite the same artefact instead of
 two things that happen to look alike — and it is why I can say "it stays quiet
 by default" as a property rather than a hope.
 
+## The seam between two processes
+
+There is a second seam, and it is not a model boundary: the deployed agent and
+the client that calls it. One side builds a dict and the other reads a dict, and
+nothing in Python type-checks that. Deploy, invoke, read the error, fix, redeploy
+is a two-minute loop that makes this tempting to leave alone.
+
+So `test_remote.py` fakes the AWS client and asserts the exact payload each verb
+puts on the wire:
+
+```python
+def test_decide_sends_the_finding_back_whole(client):
+    agent, fake = client
+    finding = SWEEP["surfaced"][0]["finding"]
+    agent.decide(finding, "opt-return")
+    assert _sent(fake) == {
+        "action": "decide",
+        "finding": finding,
+        "option_id": "opt-return",
+    }
+```
+
+Eighteen tests, still no network, still no model. What they buy is that a rename
+on either side fails here rather than after a deployment.
+
+Writing them turned up something worth keeping. The obvious way to address a
+finding is by its id — and the ids are written by the model on every sweep, so
+the same finding is `F2-library-hold-blocks-registration` on one run and
+`F3-library-hold` on the next. A client that addressed findings by id would pass
+every test I would have thought to write and then fail in front of an audience.
+It addresses them by the position the report printed instead, because that
+cannot move. The test suite did not catch that; trying to script the demo did.
+
 ## What I'd take to the next agent
 
 **Find the seam where the model stops and your code starts, and put your test
@@ -312,6 +345,6 @@ you is to let it inherit whatever the developer's laptop happens to have.
 
 ---
 
-*Compass is a Python + Strands Agents SDK project with 114 tests, no network, and
+*Compass is a Python + Strands Agents SDK project with 132 tests, no network, and
 a four-second suite. Source, tests and the architecture write-up are in the
 repository.*

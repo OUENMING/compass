@@ -8,14 +8,16 @@ My entry for the AWS **Agents for Humans** hackathon, Compass, runs entirely
 locally during development. There is no AWS dependency in the data layer, the
 tools, the agents or the orchestrator — the Strands Agents SDK is model-agnostic,
 so the same code runs against a cheap OpenAI-compatible endpoint on my laptop
-and against Amazon Bedrock in the cloud.
+and against Amazon Bedrock in the cloud. (That last swap is also what saved the
+demo when the account turned out to be blocked on the Bedrock data plane — a
+provider is an environment variable here, not an architecture.)
 
 That was deliberate. It meant I could build the whole thing without waiting on
 credentials, and it meant that when I finally ran `agentcore deploy`, the only
 new variable was the platform.
 
-The platform, it turned out, had one bug waiting for me that **108 passing local
-tests could not see**. This post is about that bug, because I think it is
+The platform, it turned out, had one bug waiting for me that **the local suite could not
+see**. This post is about that bug, because I think it is
 general to any Strands agent that talks to an MCP server on stdio.
 
 ## The setup
@@ -170,8 +172,21 @@ def run_in_bundle(bundle: Path, source: str) -> subprocess.CompletedProcess:
 and then asks the two questions that decide whether the deployed agent works:
 
 ```python
-def test_the_mcp_subprocess_can_import_compass(bundle):
+def test_the_entrypoint_hands_the_package_to_its_subprocesses(bundle):
     """The one that would have shipped broken: sys.path does not cross processes."""
+    result = run_in_bundle(bundle, LOAD + """
+    import json, os
+    print("PYTHONPATH", json.dumps(os.environ.get("PYTHONPATH", "")))
+    """)
+
+    assert result.returncode == 0, result.stderr
+    line = next(l for l in result.stdout.splitlines() if l.startswith("PYTHONPATH "))
+    entries = json.loads(line.removeprefix("PYTHONPATH ")).split(os.pathsep)
+    assert str(bundle / "src") in entries
+
+
+def test_the_mcp_server_can_be_started_from_the_bundle(bundle):
+    """The integration half: the tools really do come up."""
     result = run_in_bundle(bundle, LOAD + """
     import json
     from compass.tools.registry import agent_tools
@@ -188,6 +203,19 @@ def test_the_mcp_subprocess_can_import_compass(bundle):
 The stripped environment is the whole trick. No `PYTHONPATH`, no `PYTHONHOME`,
 run from inside the bundle — which is exactly the situation the deployed process
 is in, and exactly the situation no ordinary test creates.
+
+**And then I deleted the fix, to check the test was worth having.** The
+integration one *still passed*. The spawned child starts with normal `site`
+processing, and an editable install of `compass` in my checkout resolves the
+import through a `.pth` file whether or not the entrypoint exported anything —
+so on a developer machine, the integration test is blind to the very bug it
+looks like it is guarding.
+
+Only the assertion on the environment variable itself fails when the export is
+removed. That is why the first test above asserts the invariant directly and the
+second is labelled a smoke test with no claim attached. A test that passes with
+the fix deleted is not a test, and I would not have known without deleting the
+fix.
 
 ## The other thing AgentCore does not give you
 
@@ -243,6 +271,51 @@ def handle(payload: dict, compass: Compass) -> dict:
 A *bad request* and a *refusal by the rules* are different things and deserve
 different answers. The refusal is a result worth showing the student — it is the
 same refusal the registrar would give her.
+
+## The credential the repository must not contain
+
+A deployed agent needs a model credential, and `agentcore.json` is committed. Its
+`envVars` are therefore the wrong place for a key — the file is in git, so
+anything in it is public.
+
+The runtime's environment variables have exactly two fields, `name` and `value`,
+and no reference syntax. So the name of an SSM parameter goes in the committed
+file and the value stays in SSM:
+
+```json
+{"name": "COMPASS_SECRET_PARAMETER", "value": "/compass/model-api-key"},
+{"name": "COMPASS_SECRET_TARGET",    "value": "DEEPSEEK_API_KEY"}
+```
+
+with a policy attached to the runtime's execution role granting `ssm:GetParameter`
+on that one ARN and nothing else. The entrypoint reads it at cold start:
+
+```python
+def _load_provider_secret() -> None:
+    name = os.environ.get("COMPASS_SECRET_PARAMETER", "").strip()
+    target = os.environ.get("COMPASS_SECRET_TARGET", "").strip()
+    if not (name and target) or os.environ.get(target):
+        return
+    value = boto3.client("ssm").get_parameter(
+        Name=name, WithDecryption=True
+    )["Parameter"]["Value"]
+    os.environ[target] = value
+```
+
+Two details in that function are doing work. It is **idempotent and a no-op when
+the variable is already set**, so the local demo, the CLI and the test suite
+never reach AWS on account of it — which matters because `invoke` rebuilds the
+agent on every call. And the value lands in the process environment, which is
+exactly where the model factory already looked, so nothing downstream had to
+change.
+
+The first version of this deployment shipped without `openai` in
+`pyproject.toml` — the package the OpenAI-compatible backend needs. The invoke
+came back `ModuleNotFoundError: No module named 'openai'`, which was the good
+news: it meant the SSM read had already worked, and the only thing wrong was a
+missing line in the dependency list. **A deployed agent's dependencies are
+whatever the bundler resolves from your manifest, not whatever is in your
+virtualenv.**
 
 ## What I'd tell you before you deploy
 

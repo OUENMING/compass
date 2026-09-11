@@ -172,7 +172,7 @@ property.** Three examples, all found by testing rather than by reasoning:
 
 **Deployment had a bug that no local test could find.** The MCP server runs as a
 subprocess, and a child process inherits the environment rather than the
-parent's `sys.path`. A fix that patched only `sys.path` passed all 113 local
+parent's `sys.path`. A fix that patched only `sys.path` passed every local test
 tests and would have failed on the first real invocation. It now exports
 `PYTHONPATH`.
 
@@ -212,11 +212,27 @@ of the three prompt problems above is now a test that fails if it comes back.
 
 ## Built with
 
-`strands-agents` · `fastmcp` · `bedrock-agentcore` · `boto3` ·
-Amazon Bedrock (Claude on Bedrock) · Amazon Bedrock AgentCore Runtime ·
-`fastapi` · `uvicorn` · `pydantic` · `pytest` · Python 3.12+ · Amazon CloudWatch
+`strands-agents` · `fastmcp` · `bedrock-agentcore` · `boto3` · `openai` ·
+Amazon Bedrock (Claude on Bedrock — the first-class model backend) ·
+Amazon Bedrock AgentCore Runtime · AWS Systems Manager Parameter Store ·
+Amazon CloudWatch · `fastapi` · `uvicorn` · `pydantic` · `pytest` · Python 3.12+
 
 Built with **Claude Code**.
+
+**On the model, for anyone reading the code.** Compass is deliberately
+model-agnostic — `compass.llm` selects a backend from `COMPASS_PROVIDER` — and
+the deployment behind the demo runs the `deepseek` provider, with its key read at
+cold start from an SSM `SecureString` that only the runtime's execution role may
+read. `bedrock` is the primary path and the one this was developed against; the
+AWS account used for this deployment is under a new-account restriction on the
+Bedrock data plane (`ValidationException: Access to Bedrock models is not allowed
+for this account`, surfaced as `Error 002`). Isolating it showed the restriction
+is account-wide rather than model-specific — Amazon Nova and Titan fail
+identically, in every region, under the account root's own credentials — so it
+was not something to fix by choosing a different model. Rather than let it decide
+whether the demo works, the runtime was pointed at another provider, which is
+what the abstraction was for. Switching back is one environment variable and a
+redeploy.
 
 ---
 

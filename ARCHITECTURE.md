@@ -304,6 +304,27 @@ returns every caller-caused failure as a *value*: a malformed payload is a
 An entrypoint that raises gives the person invoking it a 502 and nothing to act
 on.
 
+### Reaching the deployed agent
+
+`agentcore invoke` wraps its argument in `{"prompt": ...}`, which reaches `ask`
+and nothing else. The two actions this project is actually about — a sweep and a
+decision — need their payload to arrive intact, so `compass.remote` posts it with
+`InvokeAgentRuntime` directly. It is a client, imported by nothing in the agent,
+and it exists because the vendor CLI cannot express the interesting half of the
+contract.
+
+The finding a `decide` carries is the finding the caller was shown, sent back
+whole rather than named by id. That is deliberate: if the runtime looked the
+finding up again, the authorisation would come from the sweep that produced it
+instead of from the person who chose. `test_remote.py` pins the four payloads on
+the wire, because one side builds that JSON as a dict and the other reads it as a
+dict, so no type checker sees the seam.
+
+Findings are addressed by position rather than id for a related reason: ids are
+written by the model on each sweep and differ between runs, while the order the
+report printed them in cannot move. A client that addressed findings by a key
+the model invents would work in every test and fail in front of an audience.
+
 Observability is on by default (`enableOtel`), shipping traces to CloudWatch via
 `aws-opentelemetry-distro`.
 
@@ -311,7 +332,7 @@ Observability is on by default (`enableOtel`), shipping traces to CloudWatch via
 
 ## 8. Testing strategy
 
-114 tests, no network, ~4 seconds.
+132 tests, no network, ~4 seconds.
 
 | File | What it holds |
 |---|---|
@@ -323,6 +344,7 @@ Observability is on by default (`enableOtel`), shipping traces to CloudWatch via
 | `test_data.py` | the synthetic-data warranties, including byte-identical regeneration |
 | `test_runtime.py` | the deployed contract, with a stand-in agent |
 | `test_bundle.py` | the deployment bundle's layout: the environment the entrypoint builds, asserted directly, plus a smoke test that the tools come up |
+| `test_remote.py` | the wire contract with the deployed agent: what each verb sends, and how a finding is addressed |
 
 Three deliberate choices:
 

@@ -13,7 +13,7 @@ the "not just chat about it" criterion.
 ```bash
 cd ~/compass
 python -m compass.data.generate        # pristine dataset: 2 holds, unfiled plan
-python -m pytest tests -q              # 114 passed — put this on screen once
+python -m pytest tests -q              # 132 passed — put this on screen once
 
 # Nothing stale may be holding the port. A server left over from an earlier
 # session serves the code as it was *before* your last edits, and you would
@@ -224,8 +224,26 @@ R6 branch.
 
 ```bash
 agentcore status
-agentcore invoke "when is the W deadline?"
+agentcore invoke "when is the W deadline?"          # the conversational half
+python -m compass.remote --json > /tmp/sweep.json   # a real sweep, on the endpoint
+python -m compass.remote
+python -m compass.remote --decide 1 --option 1 --from /tmp/sweep.json
+python -m compass.remote                            # re-sweep: one finding, not two
 ```
+
+> `agentcore invoke` only sends a prompt, so it reaches the question half of the
+> contract. The sweep and the decision need their payload to arrive intact —
+> there's a small client in the repo that posts them straight to the endpoint.
+
+**Say** (over the decide and the re-sweep — this is the beat that proves the
+deployed agent did the work rather than talking about it):
+
+> Two findings surfaced. I pick the first one — return the library items in
+> person — and the deployed agent does it: `LIB-2026-B6E2B7`, hold cleared.
+>
+> Sweep again, same session. One finding. The library problem is gone, because
+> the thing that fixed it ran on the other side of an HTTPS call, and the state
+> it changed is still changed.
 
 **Say:**
 
@@ -247,7 +265,7 @@ agentcore invoke "when is the W deadline?"
 > asserting things about a real institution's rules that could mislead a real
 > student.
 >
-> A hundred and fourteen tests, no network.
+> A hundred and thirty-two tests, no network.
 
 **Close on the terminal, `pytest` output still on screen.**
 
