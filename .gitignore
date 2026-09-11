@@ -16,6 +16,9 @@ build/
 .agentcore/
 cdk.out/
 app/*/build/
+# `agentcore package` writes the deploy bundle and the flattened copy of it here
+agentcore/*.zip
+agentcore/*/staging/
 
 # Generated demo artifacts
 data/receipts.jsonl

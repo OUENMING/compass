@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.agentcore.aws.dev/v1/agentcore.json",
+  "name": "compass",
+  "version": 1,
+  "managedBy": "CDK",
+  "tags": {
+    "agentcore:created-by": "agentcore-cli",
+    "agentcore:project-name": "compass",
+    "project": "compass",
+    "hackathon": "agents-for-humans"
+  },
+  "runtimes": [
+    {
+      "name": "Compass",
+      "description": "A background agent that watches degree rules and speaks up only when silence costs the student something irreversible.",
+      "build": "CodeZip",
+      "entrypoint": "app/Compass/main.py",
+      "codeLocation": "./",
+      "runtimeVersion": "PYTHON_3_14",
+      "networkMode": "PUBLIC",
+      "protocol": "HTTP",
+      "envVars": [
+        {
+          "name": "COMPASS_PROVIDER",
+          "value": "bedrock"
+        }
+      ]
+    }
+  ],
+  "memories": [],
+  "knowledgeBases": [],
+  "credentials": [],
+  "evaluators": [],
+  "onlineEvalConfigs": [],
+  "agentCoreGateways": [],
+  "policyEngines": [],
+  "configBundles": [],
+  "abTests": [],
+  "harnesses": [],
+  "datasets": [],
+  "payments": []
+}

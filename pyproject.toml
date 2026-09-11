@@ -10,6 +10,12 @@ dependencies = [
     "fastmcp>=2.0",
     "pydantic>=2.0",
     "python-dotenv>=1.0",
+    # The AgentCore runtime. Needed by app/Compass/main.py and by the
+    # deploy/observability path, not by the local demo — but the deployment
+    # resolves dependencies from this file, so it has to be here rather than in
+    # an extra the bundler would not install.
+    "bedrock-agentcore>=1.9.1",
+    "aws-opentelemetry-distro>=0.7.0",
 ]
 
 [project.optional-dependencies]
