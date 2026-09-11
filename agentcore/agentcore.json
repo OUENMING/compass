@@ -22,8 +22,19 @@
       "envVars": [
         {
           "name": "COMPASS_PROVIDER",
-          "value": "bedrock"
+          "value": "deepseek"
+        },
+        {
+          "name": "COMPASS_SECRET_PARAMETER",
+          "value": "/compass/model-api-key"
+        },
+        {
+          "name": "COMPASS_SECRET_TARGET",
+          "value": "DEEPSEEK_API_KEY"
         }
+      ],
+      "additionalPolicies": [
+        "agentcore/policies/model-key.json"
       ]
     }
   ],

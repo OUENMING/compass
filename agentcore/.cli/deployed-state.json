@@ -1,3 +1,17 @@
 {
-  "targets": {}
+  "targets": {
+    "default": {
+      "resources": {
+        "runtimes": {
+          "Compass": {
+            "runtimeId": "compass_Compass-PA4im3ELf9",
+            "runtimeArn": "arn:aws:bedrock-agentcore:eu-west-1:730356633352:runtime/compass_Compass-PA4im3ELf9",
+            "roleArn": "arn:aws:iam::730356633352:role/AgentCore-compass-default-ApplicationAgentCompassRu-rFEhVaQtOe3t"
+          }
+        },
+        "stackName": "AgentCore-compass-default",
+        "deployHash": "ad5794bacd126bb4"
+      }
+    }
+  }
 }

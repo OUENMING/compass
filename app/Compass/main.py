@@ -96,6 +96,39 @@ def data_dir() -> Path:
     return scratch
 
 
+def _load_provider_secret() -> None:
+    """Bring the model provider's credential in from SSM Parameter Store.
+
+    A deployed agent needs a credential the repository must not contain, and
+    ``agentcore/agentcore.json`` is committed — so its ``envVars`` can carry the
+    *name* of a parameter but never a value. The parameter is a SecureString
+    that only this runtime's execution role may read (see
+    ``agentcore/policies/model-key.json``), and the value lands in this
+    process's environment, which is exactly where ``compass.llm`` already looks
+    for it.
+
+    Idempotent, and a no-op whenever the variable is already set — so the local
+    demo, the CLI and the test suite never reach AWS on account of this
+    function, and it does not matter that ``invoke`` rebuilds the agent on
+    every call.
+    """
+    name = os.environ.get("COMPASS_SECRET_PARAMETER", "").strip()
+    target = os.environ.get("COMPASS_SECRET_TARGET", "").strip()
+    if not (name and target) or os.environ.get(target):
+        return
+
+    import boto3
+
+    region = (os.environ.get("AWS_REGION")
+              or os.environ.get("AWS_DEFAULT_REGION")
+              or "eu-west-1")
+    value = boto3.client("ssm", region_name=region).get_parameter(
+        Name=name, WithDecryption=True
+    )["Parameter"]["Value"]
+    os.environ[target] = value
+    log.info("loaded a provider credential from %s into %s", name, target)
+
+
 def _finding_from(payload: dict) -> Finding:
     """Rebuild a finding the caller received, or explain why it cannot be."""
     raw = payload.get("finding")
@@ -235,6 +268,7 @@ def invoke(payload: dict) -> dict:
     502 and nothing to act on.
     """
     try:
+        _load_provider_secret()
         return handle(payload, Compass(data_dir=data_dir(), use_mcp=True))
     except Exception as exc:  # noqa: BLE001 — the runtime must stay answerable
         log.exception("invocation failed")

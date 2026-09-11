@@ -16,11 +16,25 @@ dependencies = [
     # an extra the bundler would not install.
     "bedrock-agentcore>=1.9.1",
     "aws-opentelemetry-distro>=0.7.0",
+    # ``compass.llm`` reaches for strands' OpenAIModel whenever the provider is
+    # deepseek or openai, which is one of the three backends the project
+    # supports. Same reasoning as above: the deployed runtime needs it, so it
+    # belongs in the resolved set rather than behind an extra.
+    "openai>=1.0",
+    # Used by the entrypoint to read the provider credential out of SSM
+    # Parameter Store. bedrock-agentcore pulls boto3 in transitively; naming it
+    # here means that call does not depend on someone else's dependency tree.
+    "boto3>=1.34",
 ]
 
 [project.optional-dependencies]
 web = ["fastapi>=0.115", "uvicorn[standard]>=0.30"]
 dev = ["pytest>=8.0"]
+# Only needed when your AWS credentials come from `aws login` rather than a
+# static key: that credential provider is implemented against the AWS Common
+# Runtime, and botocore refuses to use it without this extra. Plain boto3 is a
+# core dependency; this is the piece that is conditional on how you signed in.
+remote = ["botocore[crt]"]
 # Only needed to regenerate docs/architecture.png. The figure is checked in, so
 # a reader never needs this to run or read the project.
 docs = ["pillow>=10.0"]
