@@ -13,7 +13,7 @@ the "not just chat about it" criterion.
 ```bash
 cd ~/compass
 python -m compass.data.generate        # pristine dataset: 2 holds, unfiled plan
-python -m pytest tests -q              # 111 passed — put this on screen once
+python -m pytest tests -q              # 114 passed — put this on screen once
 uvicorn web.app:app --port 8123        # the decision card
 ```
 
@@ -241,7 +241,7 @@ agentcore invoke "when is the W deadline?"
 > asserting things about a real institution's rules that could mislead a real
 > student.
 >
-> A hundred and eleven tests, no network.
+> A hundred and fourteen tests, no network.
 
 **Close on the terminal, `pytest` output still on screen.**
 

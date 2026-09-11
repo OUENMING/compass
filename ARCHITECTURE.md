@@ -278,6 +278,20 @@ matters: the MCP server is a **subprocess**, and a child inherits the
 environment, not the parent's `sys.path`. A fix that patched only `sys.path`
 would pass every local test and fail on the first real invocation.
 
+That claim was tested rather than asserted, and the way it had to be tested is
+worth recording. Deleting the `PYTHONPATH` export and re-running the bundle
+integration test **still passes on this machine** — 13 tools, no error —
+because the spawned child starts with normal `site` processing, and an editable
+install of `compass` in this checkout resolves the import through a `.pth` file
+whether or not the export happened. The integration test is therefore blind to
+the bug it looks like it is guarding. Only the assertion on the environment
+variable itself fails when the export is removed, which is why
+`test_the_entrypoint_hands_the_package_to_its_subprocesses` asserts the
+invariant directly and `test_the_mcp_server_can_be_started_from_the_bundle` is
+kept as a smoke test with no claim attached. The negative control is recorded
+here because "this test would have caught it" is exactly the sort of thing that
+is easy to believe and cheap to check.
+
 **The runtime has no writable storage.** The first invocation of a session
 copies the shipped dataset into scratch and points `COMPASS_DATA_DIR` at it.
 Within a session the writes are real; they end with the session, which is the
@@ -297,7 +311,7 @@ Observability is on by default (`enableOtel`), shipping traces to CloudWatch via
 
 ## 8. Testing strategy
 
-111 tests, no network, ~4 seconds.
+114 tests, no network, ~4 seconds.
 
 | File | What it holds |
 |---|---|
@@ -308,7 +322,7 @@ Observability is on by default (`enableOtel`), shipping traces to CloudWatch via
 | `test_prereq.py` | blocked-today versus closable-later |
 | `test_data.py` | the synthetic-data warranties, including byte-identical regeneration |
 | `test_runtime.py` | the deployed contract, with a stand-in agent |
-| `test_bundle.py` | the deployment bundle's layout, executed for real |
+| `test_bundle.py` | the deployment bundle's layout: the environment the entrypoint builds, asserted directly, plus a smoke test that the tools come up |
 
 Three deliberate choices:
 

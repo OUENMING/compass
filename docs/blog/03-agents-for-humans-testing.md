@@ -1,6 +1,6 @@
 # Testing an Agents for Humans entry without ever calling a model
 
-*111 tests, no network, four seconds — and the three bugs they caught.*
+*114 tests, no network, four seconds — and the three bugs they caught.*
 
 ---
 
@@ -178,9 +178,9 @@ parent's `sys.path`**:
 args=["-m", "compass.tools.school_mcp_server"]
 ```
 
-So patching `sys.path` alone passes 108 local tests and fails on the first real
-invocation. The fix is to export `PYTHONPATH` too, and the test builds the
-bundle layout to prove it:
+So patching `sys.path` alone passes 113 local tests and fails on the first real
+invocation. The fix is to export `PYTHONPATH` too. So I built the bundle layout
+in `tmp_path` and ran the child in a stripped environment:
 
 ```python
 @pytest.fixture
@@ -193,12 +193,48 @@ def bundle(tmp_path) -> Path:
     return root
 ```
 
-then runs the entrypoint inside it with `PYTHONPATH`, `PYTHONHOME` and every AWS
-variable stripped, and asserts the child process can list its tools.
+And then I did the thing I should do to every test that claims to catch
+something: **I deleted the fix and checked that the test failed.**
 
-That is the general shape I would recommend: **whenever production differs from
-development by more than configuration, build the production arrangement in
-`tmp_path` and run it.**
+It didn't.
+
+```
+TOOLS OK 13   <-- with the PYTHONPATH export removed
+```
+
+The child process starts with normal `site` processing, and an editable install
+of `compass` in my checkout lives in a `.pth` file inside `site-packages` — so
+the import resolves through the editable install whether or not the environment
+variable was ever set. My stripped environment wasn't stripped; it was just
+differently furnished. The test passed for a reason that had nothing to do with
+the thing I was testing.
+
+The failure mode is worth naming precisely. An integration test can only
+distinguish "fixed" from "broken" if the broken version is genuinely reachable
+in the test's environment. On a developer machine, an editable install makes
+"the package is importable" true by default, so the test is measuring the
+developer machine. It would have gone on passing forever, and it would have been
+cited in the README as proof.
+
+The fix was to stop testing the integration and assert the invariant where it
+lives:
+
+```python
+entries = json.loads(line).split(os.pathsep)
+assert str(bundle / "src") in entries, (
+    "the entrypoint did not put the bundle's src on PYTHONPATH, so the MCP "
+    "server it spawns as a subprocess will not be able to import compass"
+)
+```
+
+That assertion fails when the fix is removed. The integration check is still
+there, but it is labelled a smoke test and no longer claims to guard anything.
+
+That is the general shape I would recommend, and it has two halves. **Whenever
+production differs from development by more than configuration, build the
+production arrangement in `tmp_path` and run it.** And then: **delete the fix
+and watch the test fail.** If it doesn't, you have written a test that describes
+your laptop.
 
 ## The fixtures that keep the suite honest
 
@@ -276,6 +312,6 @@ you is to let it inherit whatever the developer's laptop happens to have.
 
 ---
 
-*Compass is a Python + Strands Agents SDK project with 111 tests, no network, and
+*Compass is a Python + Strands Agents SDK project with 114 tests, no network, and
 a four-second suite. Source, tests and the architecture write-up are in the
 repository.*

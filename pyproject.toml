@@ -21,6 +21,9 @@ dependencies = [
 [project.optional-dependencies]
 web = ["fastapi>=0.115", "uvicorn[standard]>=0.30"]
 dev = ["pytest>=8.0"]
+# Only needed to regenerate docs/architecture.png. The figure is checked in, so
+# a reader never needs this to run or read the project.
+docs = ["pillow>=10.0"]
 
 [project.scripts]
 compass = "compass.agents.compass:main"

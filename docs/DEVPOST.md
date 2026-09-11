@@ -172,10 +172,17 @@ property.** Three examples, all found by testing rather than by reasoning:
 
 **Deployment had a bug that no local test could find.** The MCP server runs as a
 subprocess, and a child process inherits the environment rather than the
-parent's `sys.path`. A fix that patched only `sys.path` passed all 108 local
+parent's `sys.path`. A fix that patched only `sys.path` passed all 113 local
 tests and would have failed on the first real invocation. It now exports
-`PYTHONPATH`, and `tests/test_bundle.py` builds the deployment layout in a
-temporary directory and runs the child in a stripped environment to prove it.
+`PYTHONPATH`.
+
+Testing that claim turned out to be more interesting than making it. I deleted
+the export and re-ran the deployment-layout test — and it **still passed**,
+because the spawned child starts with normal `site` processing and the editable
+install in my checkout resolved the import anyway. My test was blind to the bug
+it was guarding. The fix is now asserted where it actually lives, on the
+environment the entrypoint builds for its subprocesses, with a comment
+explaining why the integration test can't see it.
 
 **The AgentCore runtime has no writable storage.** The first invocation of a
 session copies the shipped dataset into scratch and points `COMPASS_DATA_DIR`

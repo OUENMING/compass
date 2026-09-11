@@ -12,9 +12,14 @@ fresh container would have, and asks the two questions that decide whether the
 deployed agent works at all:
 
 * can the entrypoint find the package and the data when it is not installed, and
-* can the **MCP subprocess** import it too — a child process inherits the
-  environment, not the parent's ``sys.path``, so a fix that only patches
-  ``sys.path`` passes every local test and fails on the first invocation.
+* will the **MCP subprocess** be able to import it — a child process inherits
+  the environment, not the parent's ``sys.path``.
+
+The second question is asked of the *environment the entrypoint builds*, not of
+the integration. That is not a stylistic choice: the integration check passes
+even with the fix deleted, because the child starts with normal ``site``
+processing and an editable install resolves the import regardless. See
+``test_the_entrypoint_hands_the_package_to_its_subprocesses``.
 """
 
 from __future__ import annotations
@@ -30,6 +35,17 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[1]
+
+# The dependencies, and nothing else. Running the child with `-S` stops Python
+# from processing the `site-packages` directory, which is what makes this a
+# clean room: an editable install of `compass` in this checkout lives in a `.pth`
+# file *inside* site-packages, and `.pth` files are only executed for site
+# directories — never for a `PYTHONPATH` entry. So the child can import strands,
+# mcp and pydantic, and still has no route to `compass` except the one the
+# entrypoint sets up, which is exactly the situation in the deployed container.
+SITE_PACKAGES = Path(
+    __import__("sysconfig").get_paths()["purelib"]
+)
 
 
 @pytest.fixture
@@ -48,12 +64,30 @@ def run_in_bundle(bundle: Path, source: str) -> subprocess.CompletedProcess:
         "PATH": os.environ.get("PATH", ""),
         "HOME": os.environ.get("HOME", ""),
         "COMPASS_SCRATCH_DIR": str(bundle / "scratch"),
-        # No PYTHONPATH and no PYTHONHOME: the bundle has to fend for itself.
+        # The dependencies, but no route to `compass`. See SITE_PACKAGES above.
+        "PYTHONPATH": str(SITE_PACKAGES),
     }
     return subprocess.run(
-        [sys.executable, "-c", textwrap.dedent(source)],
+        [sys.executable, "-S", "-c", textwrap.dedent(source)],
         cwd=bundle, env=env, capture_output=True, text=True, timeout=120,
     )
+
+
+def test_the_clean_room_is_actually_clean(bundle):
+    """Guard the guard.
+
+    If `compass` were importable in this environment without the entrypoint's
+    path setup — which is what an editable install would do — then the
+    subprocess test below would pass whether or not the bug was fixed, and would
+    be worth nothing. This asserts the premise the other tests rest on.
+    """
+    result = run_in_bundle(bundle, "import compass")
+
+    assert result.returncode != 0, (
+        "compass is importable inside the bundle with no path setup, so the "
+        "tests in this file cannot tell a fixed deployment from a broken one"
+    )
+    assert "ModuleNotFoundError" in result.stderr
 
 
 LOAD = """
@@ -78,8 +112,40 @@ def test_the_entrypoint_finds_the_package_and_the_dataset(bundle):
     assert "TODAY 2026-09-28" in result.stdout
 
 
-def test_the_mcp_subprocess_can_import_compass(bundle):
-    """The one that would have shipped broken: sys.path does not cross processes."""
+def test_the_entrypoint_hands_the_package_to_its_subprocesses(bundle):
+    """The regression guard, asserted directly.
+
+    This is the load-bearing test in the file. The fix it protects is one
+    environment variable, and no amount of integration testing can see it on a
+    developer machine: the MCP server is spawned as `python -m ...`, and because
+    *it* starts with the normal `site` machinery, an editable install of
+    `compass` in the developer's checkout resolves the import whether or not the
+    variable was ever set. The clean room in `run_in_bundle` covers the process
+    the entrypoint runs in, not the one it spawns.
+
+    So the invariant is checked where it lives: after importing the entrypoint,
+    `PYTHONPATH` must name the bundle's own `src`, because that is the only
+    thing the subprocess will inherit.
+    """
+    result = run_in_bundle(bundle, LOAD + """
+    import json, os
+    print("PYTHONPATH", json.dumps(os.environ.get("PYTHONPATH", "")))
+    """)
+
+    assert result.returncode == 0, result.stderr
+    line = next(l for l in result.stdout.splitlines() if l.startswith("PYTHONPATH "))
+    entries = json.loads(line.removeprefix("PYTHONPATH ")).split(os.pathsep)
+
+    assert str(bundle / "src") in entries, (
+        "the entrypoint did not put the bundle's src on PYTHONPATH, so the MCP "
+        "server it spawns as a subprocess will not be able to import compass"
+    )
+    # And it must not have thrown away whatever was already there.
+    assert str(SITE_PACKAGES) in entries
+
+
+def test_the_mcp_server_can_be_started_from_the_bundle(bundle):
+    """The integration half: the tools really do come up."""
     result = run_in_bundle(bundle, LOAD + """
     import json
     from compass.tools.registry import agent_tools

@@ -274,7 +274,7 @@ a value rather than an exception, distinguishing a *bad request* from a
 ## 9. Tests
 
 ```bash
-python -m pytest tests -q      # 110 passed, no network, ~4s
+python -m pytest tests -q      # 114 passed, no network, ~4s
 ```
 
 The suite never calls a model and never touches the checked-in `data/`: each
@@ -292,8 +292,15 @@ Two of the files are worth pointing at:
   because the MCP server runs as a **subprocess**, and a child process inherits
   the environment rather than the parent's `sys.path` — so a fix that only
   patched `sys.path` would pass every local test and fail on the first real
-  invocation. That is a deployment bug that no amount of local testing finds,
-  so it gets a test that ships the layout instead of trusting it.
+  invocation. That is a deployment bug no amount of local testing finds.
+
+  The assertion is on the **environment the entrypoint builds**, not on the
+  integration: removing the `PYTHONPATH` export and re-running the integration
+  check here *still succeeds*, because the child process starts with normal
+  `site` processing and an editable install resolves the import anyway. A test
+  that passes with the fix removed is not a test, so the invariant is asserted
+  where it is actually load-bearing and the integration half is labelled as the
+  smoke test it is.
 
 ## 10. What Compass will not do
 
