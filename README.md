@@ -178,7 +178,7 @@ Requires Python 3.12+. Nothing else to install; no AWS account needed to run it
 locally.
 
 ```bash
-git clone https://github.com/<you>/compass && cd compass
+git clone https://github.com/OUENMING/compass && cd compass
 uv venv && uv pip install -e ".[web,dev]"
 
 python -m compass.data.generate      # write the synthetic dataset

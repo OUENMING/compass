@@ -224,7 +224,7 @@ Built with **Claude Code**.
 
 | | |
 |---|---|
-| Repository | `https://github.com/<handle>/compass` |
+| Repository | `https://github.com/OUENMING/compass` |
 | Video (5 min) | see the YouTube/Vimeo link on the project page |
 | Architecture | `ARCHITECTURE.md` + `docs/architecture.png` |
 
