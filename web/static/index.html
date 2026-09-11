@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compass</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Compass</h1>
+    <span class="spacer"></span>
+    <button id="sweep">Run a sweep</button>
+    <button id="reset" title="Regenerate the synthetic dataset">Reset</button>
+  </header>
+  <p class="sub" id="sub">Loading…</p>
+
+  <div class="status" id="status">
+    <span class="dot" id="dot"></span>
+    <div>
+      <p class="big" id="status-big">Watching.</p>
+      <p class="small" id="status-small">Nothing has needed you yet.</p>
+    </div>
+  </div>
+
+  <div class="log" id="log"></div>
+
+  <div id="answer-slot"></div>
+  <div id="cards"></div>
+  <div class="silence" id="silence"></div>
+  <div class="receipts" id="receipts"></div>
+
+</div>
+
+<div class="ask">
+  <form id="ask-form">
+    <input id="ask-input" autocomplete="off"
+           placeholder="Ask Compass — e.g. “what happens if I switch specialisation?”">
+    <button type="submit" id="ask-send">Ask</button>
+  </form>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

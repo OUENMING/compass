@@ -1,0 +1,163 @@
+{
+  "id": "STU-2214773",
+  "name": "Aisha Nwosu",
+  "programme": "ECS4",
+  "stage": 2,
+  "email": "aisha.nwosu@example.edu",
+  "advisor": "Dr. M. Kavanagh",
+  "first_generation": true,
+  "international": true,
+  "completed": [
+    {
+      "code": "ECON10770",
+      "title": "Introduction to Economics",
+      "credits": 5,
+      "term": "2025/26 Autumn",
+      "grade": "B+",
+      "status": "passed"
+    },
+    {
+      "code": "ECON10730",
+      "title": "Data Analysis for Economists",
+      "credits": 5,
+      "term": "2025/26 Spring",
+      "grade": "A-",
+      "status": "passed"
+    },
+    {
+      "code": "ECON10740",
+      "title": "Exploring Economics",
+      "credits": 5,
+      "term": "2025/26 Spring",
+      "grade": "B",
+      "status": "passed"
+    },
+    {
+      "code": "SOC10020",
+      "title": "Introduction to Sociology",
+      "credits": 5,
+      "term": "2025/26 Autumn",
+      "grade": "A-",
+      "status": "passed"
+    },
+    {
+      "code": "ENGR10010",
+      "title": "Engineering Design",
+      "credits": 5,
+      "term": "2025/26 Autumn",
+      "grade": "C+",
+      "status": "passed"
+    },
+    {
+      "code": "MATH10040",
+      "title": "Linear Algebra",
+      "credits": 5,
+      "term": "2025/26 Autumn",
+      "grade": "B-",
+      "status": "passed"
+    },
+    {
+      "code": "COMP10030",
+      "title": "Programming I",
+      "credits": 5,
+      "term": "2025/26 Spring",
+      "grade": "B",
+      "status": "passed"
+    },
+    {
+      "code": "PHYS10020",
+      "title": "Physics for Engineers",
+      "credits": 5,
+      "term": "2025/26 Spring",
+      "grade": "C",
+      "status": "passed"
+    },
+    {
+      "code": "PHIL10020",
+      "title": "Ethics and Society",
+      "credits": 5,
+      "term": "2025/26 Autumn",
+      "grade": "B+",
+      "status": "passed"
+    },
+    {
+      "code": "LANG10010",
+      "title": "Academic Writing",
+      "credits": 5,
+      "term": "2025/26 Autumn",
+      "grade": "A",
+      "status": "passed"
+    },
+    {
+      "code": "HIST10020",
+      "title": "Modern Irish History",
+      "credits": 5,
+      "term": "2025/26 Spring",
+      "grade": "B",
+      "status": "passed"
+    },
+    {
+      "code": "GEOG10030",
+      "title": "Human Geography",
+      "credits": 5,
+      "term": "2025/26 Spring",
+      "grade": "B-",
+      "status": "passed"
+    }
+  ],
+  "registered": [
+    "ECON20010",
+    "STAT20110",
+    "PHIL20030"
+  ],
+  "planned": [
+    "ECON20020",
+    "ECON20030",
+    "SOC20040"
+  ],
+  "spring_registered": [],
+  "holds": [
+    {
+      "id": "LIB-2026-7781",
+      "kind": "Library",
+      "description": "3 items from the Short Loan collection are 21 days overdue. The library account is blocked and the block propagates to registration. Items not resolved within 28 days of the due date convert to a replacement charge and the block is escalated to a financial hold, which only the Fees Office can clear. Fees Office clearance takes 10 working days and is not expedited during a registration period.",
+      "blocks_registration": true,
+      "resolvable_by": "Return the items in person (no charge) or authorise the replacement charge of EUR 45.00. Either must happen before the escalation date.",
+      "action": "resolve_library_hold",
+      "cleared": false
+    },
+    {
+      "id": "ADV-2026-041",
+      "kind": "Advising",
+      "description": "Stage 3 degree plan has not been filed. The plan must be advisor-approved before the Spring registration window opens.",
+      "blocks_registration": true,
+      "resolvable_by": "File a degree plan that satisfies all programme requirements, then obtain advisor approval (3 working days).",
+      "action": "file_degree_plan",
+      "cleared": false
+    }
+  ],
+  "degree_plan_filed": false,
+  "specialisation": "quantitative",
+  "draft_plan": {
+    "econ_core": [
+      "ECON10770",
+      "ECON10730",
+      "ECON10740",
+      "ECON20010",
+      "ECON20020",
+      "ECON30020",
+      "ECON30040",
+      "ECON30050"
+    ],
+    "quant_stream": [
+      "ECON20030",
+      "ECON30010"
+    ],
+    "general_elective": [
+      "ECON10740",
+      "SOC10020",
+      "PHIL10020",
+      "LANG10010"
+    ]
+  }
+}

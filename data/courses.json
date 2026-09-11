@@ -1,0 +1,362 @@
+[
+  {
+    "code": "ECON10770",
+    "title": "Introduction to Economics",
+    "credits": 5,
+    "level": 1,
+    "term": "Autumn",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "ECON10730",
+    "title": "Data Analysis for Economists",
+    "credits": 5,
+    "level": 1,
+    "term": "Spring",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "ECON10740",
+    "title": "Exploring Economics",
+    "credits": 5,
+    "level": 1,
+    "term": "Spring",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": "Policy-facing, experience-based introduction. Counts toward the Economics option list but not the quantitative stream."
+  },
+  {
+    "code": "ECON10790",
+    "title": "Mathematical Economics",
+    "credits": 5,
+    "level": 1,
+    "term": "Spring",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 60,
+    "enrolled": 47,
+    "summary": "Required bridge into ECON20030 and ECON20040. Runs once a year, Spring only, and historically fills."
+  },
+  {
+    "code": "SOC10020",
+    "title": "Introduction to Sociology",
+    "credits": 5,
+    "level": 1,
+    "term": "Autumn",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "PHIL10020",
+    "title": "Ethics and Society",
+    "credits": 5,
+    "level": 1,
+    "term": "Autumn",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "LANG10010",
+    "title": "Academic Writing",
+    "credits": 5,
+    "level": 1,
+    "term": "Autumn",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "HIST10020",
+    "title": "Modern Irish History",
+    "credits": 5,
+    "level": 1,
+    "term": "Spring",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "GEOG10030",
+    "title": "Human Geography",
+    "credits": 5,
+    "level": 1,
+    "term": "Autumn",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "ENGR10010",
+    "title": "Engineering Design",
+    "credits": 5,
+    "level": 1,
+    "term": "Autumn",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "MATH10040",
+    "title": "Linear Algebra",
+    "credits": 5,
+    "level": 1,
+    "term": "Autumn",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "COMP10030",
+    "title": "Programming I",
+    "credits": 5,
+    "level": 1,
+    "term": "Autumn",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "PHYS10020",
+    "title": "Physics for Engineers",
+    "credits": 5,
+    "level": 1,
+    "term": "Spring",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "ECON20010",
+    "title": "Microeconomic Theory",
+    "credits": 5,
+    "level": 2,
+    "term": "Autumn",
+    "prerequisites": [
+      "ECON10770"
+    ],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "ECON20020",
+    "title": "Macroeconomic Theory",
+    "credits": 5,
+    "level": 2,
+    "term": "Spring",
+    "prerequisites": [
+      "ECON10770"
+    ],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "ECON20030",
+    "title": "Econometrics I",
+    "credits": 5,
+    "level": 2,
+    "term": "Spring",
+    "prerequisites": [
+      "ECON10730",
+      "ECON10790"
+    ],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": "Gateway to the quantitative stream. Requires BOTH the data analysis module and Mathematical Economics."
+  },
+  {
+    "code": "ECON20040",
+    "title": "Mathematical Economics II",
+    "credits": 5,
+    "level": 2,
+    "term": "Autumn",
+    "prerequisites": [
+      "ECON10790"
+    ],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "STAT20110",
+    "title": "Probability and Inference",
+    "credits": 5,
+    "level": 2,
+    "term": "Autumn",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "PHIL20030",
+    "title": "Philosophy of Science",
+    "credits": 5,
+    "level": 2,
+    "term": "Autumn",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "SOC20040",
+    "title": "Research Methods",
+    "credits": 5,
+    "level": 2,
+    "term": "Spring",
+    "prerequisites": [],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "ECON30010",
+    "title": "Econometrics II",
+    "credits": 5,
+    "level": 3,
+    "term": "Autumn",
+    "prerequisites": [
+      "ECON20030"
+    ],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": "Required for the Quantitative Economics specialisation."
+  },
+  {
+    "code": "ECON30020",
+    "title": "Advanced Microeconomics",
+    "credits": 5,
+    "level": 3,
+    "term": "Autumn",
+    "prerequisites": [
+      "ECON20010",
+      "ECON20040"
+    ],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "ECON30040",
+    "title": "Public Economics",
+    "credits": 5,
+    "level": 3,
+    "term": "Spring",
+    "prerequisites": [
+      "ECON20020"
+    ],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "ECON30030",
+    "title": "International Trade",
+    "credits": 5,
+    "level": 3,
+    "term": "Spring",
+    "prerequisites": [
+      "ECON20010"
+    ],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "ECON30060",
+    "title": "Economics of Inequality",
+    "credits": 5,
+    "level": 3,
+    "term": "Spring",
+    "prerequisites": [
+      "ECON20020"
+    ],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  },
+  {
+    "code": "ECON30050",
+    "title": "Economics Dissertation",
+    "credits": 10,
+    "level": 3,
+    "term": "Both",
+    "prerequisites": [
+      "ECON30020"
+    ],
+    "corequisites": [],
+    "restrictions": [],
+    "capacity": 80,
+    "enrolled": 0,
+    "summary": ""
+  }
+]

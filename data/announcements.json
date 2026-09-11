@@ -1,0 +1,36 @@
+[
+  {
+    "id": "ann-prereq-2026-09",
+    "published": "2026-09-22",
+    "title": "Withdrawal of standing prerequisite waiver for ECON20030",
+    "body": "The standing waiver that permitted students who had completed ECON10730 (Data Analysis for Economists) to enrol in ECON20030 (Econometrics I) without ECON10790 (Mathematical Economics) is withdrawn with effect from the 2026/27 academic year. From that year, ECON20030 requires both listed prerequisites to be satisfied by a passed module. Students who enrolled under the previous waiver are unaffected in modules already completed, but the waiver does not carry forward to new enrolments. Queries to the School Office.",
+    "affects_modules": [
+      "ECON20030",
+      "ECON30010",
+      "ECON10790"
+    ],
+    "effective_from": "2026/27",
+    "announced_to_students": false
+  },
+  {
+    "id": "ann-plan-2026-09",
+    "published": "2026-09-11",
+    "title": "Degree plans must be approved before registration opens",
+    "body": "Students progressing to Stage 3 must have an advisor-approved degree plan on file before their registration window opens. Plans are reviewed within three working days. Registration cannot be released while a plan is outstanding.",
+    "affects_modules": [],
+    "effective_from": "",
+    "announced_to_students": true
+  },
+  {
+    "id": "ann-audit-2026-08",
+    "published": "2026-08-20",
+    "title": "Annual plan audit: duplicate module assignments",
+    "body": "Plans generated automatically at programme transfer are not audited for duplicate assignments. A module appearing in two requirement groups is counted once, and the shortfall is reported to the student only at the graduation audit.",
+    "affects_modules": [
+      "ECON10740",
+      "PHIL10020"
+    ],
+    "effective_from": "2026/27",
+    "announced_to_students": false
+  }
+]

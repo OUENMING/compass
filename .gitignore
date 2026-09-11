@@ -1,0 +1,25 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Secrets — never commit
+.env
+*.key
+.aws/
+
+# AgentCore / CDK build artifacts
+.agentcore/
+cdk.out/
+app/*/build/
+
+# Generated demo artifacts
+data/receipts.jsonl
+sessions/
+demo/*.mp4
+demo/*.mov
+*.log

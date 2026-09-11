@@ -1,0 +1,66 @@
+[
+  {
+    "id": "cal-autumn-start",
+    "name": "Autumn term begins",
+    "opens": "2026-09-14",
+    "closes": null,
+    "kind": "term",
+    "notes": ""
+  },
+  {
+    "id": "cal-autumn-adddrop",
+    "name": "Autumn add / drop deadline",
+    "opens": null,
+    "closes": "2026-10-02",
+    "kind": "deadline",
+    "notes": "After this date a module change is recorded as a withdrawal and appears on the transcript."
+  },
+  {
+    "id": "cal-reg-spring",
+    "name": "Spring 2026/27 registration window",
+    "opens": "2026-10-05",
+    "closes": "2026-10-23",
+    "kind": "registration",
+    "notes": "Seat allocation is first-come, first-served within each registration group."
+  },
+  {
+    "id": "cal-autumn-w",
+    "name": "Autumn withdrawal (W) deadline",
+    "opens": null,
+    "closes": "2026-11-13",
+    "kind": "deadline",
+    "notes": ""
+  },
+  {
+    "id": "cal-library-escalation",
+    "name": "Library items escalate to a financial hold",
+    "opens": null,
+    "closes": "2026-10-05",
+    "kind": "deadline",
+    "notes": "Unresolved Short Loan items convert to a replacement charge on this date and the block becomes a financial hold clearable only by the Fees Office (10 working days)."
+  },
+  {
+    "id": "cal-fees-spring",
+    "name": "Spring fee payment due",
+    "opens": null,
+    "closes": "2027-01-15",
+    "kind": "fees",
+    "notes": "A late payment is accepted for 14 days with a EUR 50 administration charge."
+  },
+  {
+    "id": "cal-spring-start",
+    "name": "Spring term begins",
+    "opens": "2027-01-19",
+    "closes": null,
+    "kind": "term",
+    "notes": ""
+  },
+  {
+    "id": "cal-graduation-apply",
+    "name": "Graduation application closes",
+    "opens": null,
+    "closes": "2027-03-01",
+    "kind": "other",
+    "notes": ""
+  }
+]

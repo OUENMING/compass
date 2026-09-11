@@ -1,0 +1,48 @@
+{
+  "programme": "ECS4",
+  "title": "BSc Economics",
+  "total_credits": 180,
+  "stages": 3,
+  "groups": [
+    {
+      "id": "econ_core",
+      "name": "Economics Core",
+      "credits_required": 40,
+      "modules": [],
+      "prefixes": [
+        "ECON"
+      ],
+      "min_level": null,
+      "notes": "Compulsory economics modules across all three stages."
+    },
+    {
+      "id": "quant_stream",
+      "name": "Quantitative Economics Specialisation",
+      "credits_required": 15,
+      "modules": [
+        "ECON20030",
+        "ECON30010",
+        "ECON20040"
+      ],
+      "prefixes": [],
+      "min_level": null,
+      "notes": "Required only for the Quantitative Economics specialisation. Students on the General Economics specialisation replace this with 15 credits of Level 3 economics options (ECON30030, ECON30040, ECON30060)."
+    },
+    {
+      "id": "general_elective",
+      "name": "General Electives",
+      "credits_required": 20,
+      "modules": [],
+      "prefixes": [],
+      "min_level": null,
+      "notes": "Any modules outside the programme, including transferred credit from a previous pathway."
+    }
+  ],
+  "rules": [
+    "A module may satisfy the requirements of at most one group. Where a module appears in more than one place in a plan, the duplicate is discarded at audit and the plan is short by that module's credits.",
+    "Where a plan leaves a group short, the group is filled by the earliest-passed unassigned module that is eligible for it. A compulsory module always belongs to its compulsory group.",
+    "Stage credit load may not exceed 30 ECTS in any single term.",
+    "A prerequisite is satisfied only by a passed module. Standing waivers granted under a previous programme version do not carry forward once the waiver is withdrawn (see programme announcements).",
+    "The degree plan must be filed and advisor-approved before the student's registration window opens each year."
+  ]
+}
