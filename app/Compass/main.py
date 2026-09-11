@@ -208,8 +208,19 @@ def _dispatch(payload: dict, compass: Compass) -> dict:
             raise ValueError("action 'ask' needs a non-empty 'question'.")
         return {"ok": True, "answer": compass.ask(question)}
 
+    if action == "reset":
+        # A live demo endpoint is consumed by its first visitor: once someone
+        # clears the library hold, the next person to look finds nothing to see.
+        # Regenerating is honest — the data is fabricated and the generator is
+        # deterministic — so the demo can be put back the way a reader expects
+        # to find it. This is a demo affordance, not part of the agent.
+        from compass.data.generate import write_all
+
+        write_all(Path(compass.data_dir))
+        return {"ok": True, "reset": True, "data_dir": str(compass.data_dir)}
+
     raise ValueError(
-        f"unknown action {action!r}. Use 'sweep', 'decide' or 'ask'."
+        f"unknown action {action!r}. Use 'sweep', 'decide', 'ask' or 'reset'."
     )
 
 

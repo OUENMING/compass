@@ -31,6 +31,14 @@ take per act if you need to; the acts are separated by hard cuts anyway.
 > cut it out — cut *into* it. Show the "Watching" state while it runs, then jump
 > cut to the cards appearing. The wait is evidence that it is doing something.
 
+> **Check the take before you keep it.** The sweep has to report all three
+> scenarios; roughly one run in seven comes back with only two, because the
+> model sometimes walks past the unfiled plan. If the `[ACT]` line or the
+> `degree-plan` card is missing, reset and take it again — it is a 25-second
+> retake, and a demo that shows two of three acts is worse than shooting again.
+> A good take also often shows a fourth, *silent* finding, which is worth
+> leaving in (see Act 1).
+
 ---
 
 ## Act 0 · Cold open (0:00 – 0:35)

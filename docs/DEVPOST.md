@@ -143,6 +143,12 @@ mutation, so a refused registration takes no seat. Successes append to
 `data/receipts.jsonl` with deterministic confirmation numbers: re-running the
 demo produces the same receipt.
 
+The deployed endpoint also accepts `{"action": "reset"}`, which regenerates the
+dataset. A live demo is consumed by its first visitor — once someone clears the
+library hold, the next person to look finds nothing to see — and since the
+generator is deterministic and the data is fabricated, putting it back is
+honest. It is a demo affordance, not part of the agent.
+
 ## Challenges
 
 **The model kept being locally reasonable in ways that broke a global

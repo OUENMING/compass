@@ -202,6 +202,19 @@ def test_an_unknown_action_is_refused_with_the_list_of_real_ones(runtime, agent)
     assert "'sweep'" in out["error"] and "'decide'" in out["error"]
 
 
+def test_reset_puts_the_demo_back(runtime, agent, store):
+    """A live endpoint is consumed by its first visitor."""
+    agent._findings = []
+    out = runtime.handle({"action": "decide", "finding": finding().model_dump(
+        mode="json"), "option_id": "return"}, agent)
+    assert out["ok"] is True
+    assert [h.kind for h in store.student.active_holds] == ["Advising"]
+
+    assert runtime.handle({"action": "reset"}, agent)["reset"] is True
+    assert [h.kind for h in store.student.active_holds] == ["Library", "Advising"]
+    assert store.student.degree_plan_filed is False
+
+
 def test_the_entrypoint_returns_an_answer_even_when_it_fails(runtime, monkeypatch, data_dir):
     """The runtime must stay answerable. An exception is an unhelpful answer."""
     def explode(*_args, **_kwargs):

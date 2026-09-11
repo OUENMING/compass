@@ -253,10 +253,16 @@ first two directly:
 {"action": "sweep"}                                    // the whole picture
 {"action": "decide", "finding": {...}, "option_id": "return_in_person"}
 {"action": "ask", "question": "when is the W deadline?"}
+{"action": "reset"}                                    // see below
 ```
 
 A payload with no `action` is read by what it contains: a bare `prompt` is a
 question, and nothing at all means a sweep.
+
+`reset` regenerates the dataset. A live demo endpoint is consumed by its first
+visitor — once someone clears the library hold, the next person to look finds
+nothing to see — and the generator is deterministic and the data is fabricated,
+so putting it back is honest. It is a demo affordance, not part of the agent.
 
 Note the asymmetry between the first two, which is the design. A sweep may only
 run the two whitelisted bookkeeping actions. A `decide` carries a human's
