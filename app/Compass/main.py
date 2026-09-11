@@ -131,8 +131,24 @@ def handle(payload: dict, compass: Compass) -> dict:
         return {"ok": False, "kind": "bad_request", "error": str(exc)}
 
 
+def _action_of(payload: dict) -> str:
+    """Which of the three things is being asked for.
+
+    An explicit ``action`` always wins. Without one, a non-empty ``prompt`` is
+    treated as a question, because that is the envelope the AgentCore CLI sends
+    when it is invoked conversationally (``agentcore invoke "when is the W
+    deadline?"``). Anything else is a sweep — the agent's default job, and the
+    only sensible thing to do when someone invokes it and says nothing.
+    """
+    if "action" in payload:
+        return str(payload["action"]).strip().lower()
+    if str(payload.get("prompt", "")).strip():
+        return "ask"
+    return "sweep"
+
+
 def _dispatch(payload: dict, compass: Compass) -> dict:
-    action = str(payload.get("action", "sweep")).strip().lower()
+    action = _action_of(payload)
 
     if action == "sweep":
         sweep = compass.sweep()
@@ -187,7 +203,7 @@ def _dispatch(payload: dict, compass: Compass) -> dict:
         }
 
     if action == "ask":
-        question = str(payload.get("question", "")).strip()
+        question = str(payload.get("question") or payload.get("prompt") or "").strip()
         if not question:
             raise ValueError("action 'ask' needs a non-empty 'question'.")
         return {"ok": True, "answer": compass.ask(question)}

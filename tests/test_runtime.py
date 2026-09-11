@@ -121,7 +121,17 @@ def test_a_surfaced_finding_carries_the_options_and_nothing_was_run(runtime, age
 
 
 def test_the_default_action_is_a_sweep(runtime, agent):
+    """Invoked with nothing to say, the agent does its job."""
     assert runtime.handle({}, agent)["ok"] is True
+    assert "summary" in runtime.handle({}, agent)
+
+
+def test_a_bare_prompt_is_treated_as_a_question(runtime, agent):
+    """The AgentCore CLI sends `{"prompt": ...}` when invoked conversationally."""
+    out = runtime.handle({"prompt": "When is the W deadline?"}, agent)
+
+    assert out["ok"] is True
+    assert out["answer"].startswith("answered: When is the W deadline?")
 
 
 # --------------------------------------------------------------------------
