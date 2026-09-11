@@ -14,6 +14,12 @@ the "not just chat about it" criterion.
 cd ~/compass
 python -m compass.data.generate        # pristine dataset: 2 holds, unfiled plan
 python -m pytest tests -q              # 114 passed — put this on screen once
+
+# Nothing stale may be holding the port. A server left over from an earlier
+# session serves the code as it was *before* your last edits, and you would
+# record a demo that does not match the repository in the submission. This
+# actually happened while preparing the take list.
+lsof -nP -iTCP:8123 -sTCP:LISTEN       # must print nothing
 uvicorn web.app:app --port 8123        # the decision card
 ```
 
