@@ -271,8 +271,10 @@ def build_student() -> StudentRecord:
         degree_plan_filed=False,
         # Auto-generated when she transferred in, and never audited. Note
         # ECON10740 appearing in *two* groups — that is the whole bug — and
-        # HIST10020 sitting unassigned, which is the fix. The plan also parks
-        # the quantitative stream at 10 of its 15 credits before the
+        # ENGR10010 sitting unassigned, which is the fix: rule 2 fills the
+        # gap with the earliest-passed unassigned eligible module, and every
+        # module is eligible for general electives. The plan also parks the
+        # quantitative stream at 10 of its 15 credits before the
         # prerequisite break is even considered.
         draft_plan={
             "econ_core": [

@@ -361,8 +361,9 @@ def file_degree_plan() -> dict:
     receipt = Receipt(
         finding_id="ADV-2026-041", option_id="file",
         action="file_degree_plan",
-        summary=("Filed the Stage 3 degree plan. Advisor approval takes three "
-                 "working days, after which the advising hold is released."),
+        summary=("Filed the Stage 3 degree plan, releasing the advising hold. "
+                 "Advisor approval takes three working days and is tracked "
+                 "separately."),
         detail={
             "confirmation": _confirmation("ADV", student.id),
             "advisor": student.advisor,
