@@ -47,6 +47,17 @@ SITE_PACKAGES = Path(
     __import__("sysconfig").get_paths()["purelib"]
 )
 
+# mcp's Windows stdio path imports pywintypes, and pywin32 exposes it through
+# a .pth file — which `-S` exists to skip. Adding the same directories the
+# .pth names restores parity with a real (site-processing) container without
+# putting `compass` on the child's path, which is the property the clean room
+# exists to protect.
+PYWIN32_PATH_ENTRIES = (
+    [str(SITE_PACKAGES / d) for d in ("win32", "win32/lib", "pywin32_system32")]
+    if sys.platform == "win32"
+    else []
+)
+
 
 @pytest.fixture
 def bundle(tmp_path) -> Path:
@@ -60,12 +71,27 @@ def bundle(tmp_path) -> Path:
 
 
 def run_in_bundle(bundle: Path, source: str) -> subprocess.CompletedProcess:
+    # The DLLs behind pywintypes load via PATH on Windows (see
+    # PYWIN32_PATH_ENTRIES above).
+    path = os.environ.get("PATH", "")
+    if sys.platform == "win32":
+        path += os.pathsep + str(SITE_PACKAGES / "pywin32_system32")
+
     env = {
-        "PATH": os.environ.get("PATH", ""),
+        "PATH": path,
         "HOME": os.environ.get("HOME", ""),
         "COMPASS_SCRATCH_DIR": str(bundle / "scratch"),
         # The dependencies, but no route to `compass`. See SITE_PACKAGES above.
-        "PYTHONPATH": str(SITE_PACKAGES),
+        "PYTHONPATH": os.pathsep.join(
+            [str(SITE_PACKAGES)] + PYWIN32_PATH_ENTRIES
+        ),
+        # Windows cannot initialise sockets — and therefore any subprocess
+        # transport — without SystemRoot, and tempfile wants its tmp pair.
+        # On a non-POSIX dev machine the clean room fails on their absence
+        # for reasons that have nothing to do with the bundle layout.
+        "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
+        "TEMP": os.environ.get("TEMP", ""),
+        "TMP": os.environ.get("TMP", ""),
     }
     return subprocess.run(
         [sys.executable, "-S", "-c", textwrap.dedent(source)],

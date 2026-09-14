@@ -32,14 +32,25 @@ DEFAULT_DEEPSEEK_MODEL = "deepseek-chat"
 DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
 
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
-DEEPSEEK_KEY_FILE = Path.home() / "lecture-live" / ".deepseek_key"
+
+
+def _deepseek_key_file() -> Path:
+    """Where a file-based DeepSeek key would live, resolved lazily.
+
+    Deliberately not a module-level constant: resolving it touches the home
+    directory, and importing this module must stay side-effect-free — a
+    sandboxed process (a clean-room test, a minimal container) can lack a
+    resolvable home, and an import should never be the thing that finds out.
+    """
+    return Path.home() / "lecture-live" / ".deepseek_key"
 
 
 def _deepseek_key() -> str | None:
     if os.environ.get("DEEPSEEK_API_KEY"):
         return os.environ["DEEPSEEK_API_KEY"]
-    if DEEPSEEK_KEY_FILE.exists():
-        key = DEEPSEEK_KEY_FILE.read_text().strip()
+    key_file = _deepseek_key_file()
+    if key_file.exists():
+        key = key_file.read_text(encoding="utf-8").strip()
         return key or None
     return None
 
@@ -97,7 +108,7 @@ def build_model():
                 raise RuntimeError(
                     "COMPASS_PROVIDER=deepseek but no key found. Set "
                     "DEEPSEEK_API_KEY or write the key to "
-                    f"{DEEPSEEK_KEY_FILE}."
+                    f"{_deepseek_key_file()}."
                 )
             base_url = os.environ.get("COMPASS_BASE_URL", DEEPSEEK_BASE_URL)
             default_model = DEFAULT_DEEPSEEK_MODEL
