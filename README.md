@@ -12,9 +12,9 @@
 **English** · [简体中文](README.zh-CN.md)
 
 A background agent that reads a university's degree rules the way a registrar
-does. It stays completely silent while everything is fine, speaks up only when
-staying quiet would cost a student something she cannot get back — and then
-**does the thing** rather than describing it.
+does. Silent while everything is fine. It speaks up only when silence would cost
+a student something she cannot get back — and then **does the thing** rather
+than describing it.
 
 Built for the **AWS Agents for Humans** hackathon · **Good Neighbor Agents** track.
 
@@ -42,24 +42,23 @@ A university runs on rules that were never written down *for students*.
 
 Prerequisite chains that do not bite until two semesters later. A library fine
 that quietly escalates into a registration block. A rule change buried on a
-handbook page instead of sent to an inbox. A degree plan that has to be approved
+handbook page instead of sent to an inbox. A degree plan that must be approved
 before a registration window opens, in an order nobody explains.
 
-None of this is a secret. It is all technically published. But it is published
-the way a legal code is published — complete, unindexed, and written for the
-people administering it.
+None of it is a secret. All of it is published — the way a legal code is:
+complete, unindexed, and written for the people administering it.
 
 The students who get caught are not the ones struggling academically. They are
-the ones with **nobody at home who has already navigated a university**.
-First-generation students. International students, who are also navigating a
-visa calendar on top of a term calendar. That is the entire audience of this
-project, and it is why the demo student is one of them.
+the ones with **nobody at home who has already navigated a university**:
+first-generation students, and international students also navigating a visa
+calendar on top of a term calendar. That is this project's whole audience, and
+why the demo student is one of them.
 
 **What exists today is built for the institution, not the student.** EAB,
 Stellic, Ellucian and Druid all sell to the registrar's office: analytics,
 degree-audit tooling, retention dashboards. A 2026 survey of the category noted
-plainly that there is still no student-facing agent. The student is the
-*subject* of these systems, never the *user* of one.
+that there is still no student-facing agent. The student is the *subject* of
+these systems, never the *user* of one.
 
 ### Why an agent, and not another app
 
@@ -67,10 +66,10 @@ The hackathon brief says it directly: *"instead of another app people open and
 manage, the agent runs autonomously and only surfaces when there's a real
 decision to make."*
 
-A course-picker is exactly the thing that brief rules out. Compass is not a tool
-a student opens — it is a watcher that reads the rules continuously and
-interrupts **at most six times a term**, when the alternative to interrupting is
-a loss she cannot undo.
+A course-picker is exactly what that brief rules out. Compass is not a tool a
+student opens — it is a watcher that reads the rules continuously and interrupts
+**at most six times a term**, and only when the alternative is a loss she cannot
+undo.
 
 ---
 
@@ -79,9 +78,9 @@ a loss she cannot undo.
 | Feature | What it does | Built with | Status |
 |---|---|---|---|
 | **Deterministic silence gate** | Six plain-Python rules decide whether to speak. The model never votes on whether to interrupt. | `src/compass/gate.py` | ✅ |
-| **Consequence reasoning** | Reads a deadline and reports `{reversible, days_until_last_safe_action, confidence, options}` as a structured `Finding`. | Strands + Pydantic v2 | ✅ |
+| **Consequence reasoning** | Reads a deadline and reports `{irreversible_after_deadline, days_until_last_safe_action, confidence, options}` as a structured `Finding`. | Strands + Pydantic v2 | ✅ |
 | **Real side effects** | Seven actions that refuse the way the registrar's system refuses — unmet prerequisite, ECTS cap, full module, failed audit. | `src/compass/tools/actions.py` | ✅ |
-| **Receipts you can re-derive** | Every action writes an append-only receipt with a *deterministic* confirmation number. Re-run the demo, get the same number. | `data/receipts.jsonl` | ✅ |
+| **Receipts you can re-derive** | Every action writes an append-only receipt with a *deterministic* confirmation number. Re-run the demo, get the same number. | `data/receipts.jsonl` (written at runtime) | ✅ |
 | **Agent whitelist** | Two auto-actions permitted. Spending money, changing what she studies, and contacting a human are all absent — and always will be. | `AUTO_ACT_PERMITTED` | ✅ |
 | **Decision card UI** | Silent → card slides in → she picks → it executes → receipt on screen. | FastAPI + SSE | ✅ |
 | **School data behind a protocol** | The catalogue, the degree rules and her record are served by a FastMCP server over stdio, not imported. Two transports, one tool list. | FastMCP · `MCPClient` | ✅ |
@@ -112,8 +111,10 @@ cd compass
 uv venv && uv pip install -e ".[web,dev]"
 ```
 
-That is the whole install. There is no database, no cloud dependency and no
-credential to configure before the demo runs.
+That is the whole install — no database, no cloud dependency. You do need a model
+backend: set `COMPASS_PROVIDER` plus its key, or `DEEPSEEK_API_KEY`, or
+`OPENAI_API_KEY`. Without one, `resolve_provider()` raises rather than guessing.
+See [Optional extras](#optional-extras).
 
 ### Optional extras
 
@@ -123,11 +124,11 @@ uv pip install -e ".[docs]"     # only to regenerate docs/architecture.png
 ```
 
 `aws login` issues browser-based temporary credentials through the AWS Common
-Runtime, and `botocore` refuses to use that provider without the `crt` extra.
-If your credentials are a plain access key, you do not need this.
+Runtime, and `botocore` refuses that provider without the `crt` extra. If your
+credentials are a plain access key, you do not need this.
 
-The architecture figure is checked in, so the `docs` extra is not needed to run
-or read the project — only to redraw it.
+The architecture figure is checked in, so `docs` is not needed to run or read the
+project — only to redraw it.
 
 ---
 
@@ -174,9 +175,9 @@ appears.
 
 ### 5 · Drive the deployed agent
 
-`agentcore invoke` wraps whatever you give it in `{"prompt": ...}`, so it reaches
-the conversational half of the contract and only that. The other two verbs need
-their payload intact, which is what `compass.remote` is for:
+`agentcore invoke` wraps whatever you give it in `{"prompt": ...}`, reaching the
+conversational half of the contract and only that. The other two verbs need their
+payload intact — which is what `compass.remote` is for:
 
 ```bash
 python -m compass.remote --json > sweep.json      # sweep the deployed agent
@@ -223,7 +224,9 @@ deployed agent really did the work, and the state it changed is still changed.
 compass/
 ├── README.md                  this file
 ├── README.zh-CN.md            简体中文
+├── CLAUDE.md                  orientation for an AI agent working in the repo
 ├── ARCHITECTURE.md            how it is put together, and why
+├── ARCHITECTURE.review-20260918.md   the review that produced the above
 ├── LICENSE                    MIT
 ├── pyproject.toml             extras: web · dev · remote
 │
@@ -234,7 +237,7 @@ compass/
 │   ├── calendar.json
 │   ├── announcements.json
 │   ├── meta.json              provenance + "all of this is fabricated"
-│   └── receipts.jsonl         append-only record of everything it did
+│   └── receipts.jsonl         append-only record of everything it did (runtime)
 │
 ├── src/compass/
 │   ├── gate.py                ★ six deterministic rules — the only path
@@ -259,7 +262,7 @@ compass/
 │   └── data/generate.py       deterministic dataset generator
 │
 ├── web/
-│   ├── app.py                 FastAPI: /, /events (SSE), /decide/{id}
+│   ├── app.py                 FastAPI: /, /api/events (SSE), POST /api/decide
 │   └── static/                the decision card
 │
 ├── app/Compass/main.py        AgentCore entrypoint (reuses src/compass)
@@ -301,17 +304,17 @@ Development tooling: **Claude Code**.
 > This is the part worth reading. Everything else is plumbing that any competent
 > agent has.
 
-Ask a model *is this important?* and it will say yes. It will say yes about
-almost everything, because "somewhat important" is always defensible. So every
-notification system built this way becomes noise — and a student who has learned
-to ignore her agent is **worse off than one with no agent at all**: she has also
-lost the worry that would have made her check.
+Ask a model *is this important?* and it says yes — about almost everything,
+because "somewhat important" is always defensible. So every notification system
+built this way becomes noise, and a student who has learned to ignore her agent
+is **worse off than one with no agent at all**: she has also lost the worry that
+would have made her check.
 
 **Compass never asks a model whether to speak.**
 
-The model establishes **facts** about a situation — what changed, what it costs,
-when the last safe moment is, how confident it is, what the options are. That
-arrives as a `Finding`. The decision to interrupt is then made by plain Python in
+The model establishes **facts** — what changed, what it costs, when the last safe
+moment is, how confident it is, what the options are. That arrives as a
+`Finding`. Whether to interrupt is then decided by plain Python in
 [`src/compass/gate.py`](src/compass/gate.py), in a fixed order:
 
 | Rule | Condition | Verdict |
@@ -323,20 +326,27 @@ arrives as a `Finding`. The decision to interrupt is then made by plain Python i
 | **R5** | Irreversible, but more than 45 days out | stay silent — this is a watch, not a decision |
 | **R6** | Irreversible, inside the horizon, and the choice is genuinely hers | **surface a card** |
 
+```text
+Finding — facts only; the model never decides whether to speak
+   │
+   ▼
+gate.py · R1 → R2 → R3 → R4 → R5 → R6 · first match wins
+   │
+   ├── stay silent    R1 · R2 · R3 · R5
+   ├── act + receipt  R4   (whitelist only)
+   └── surface        R6 ──▶ the student
+```
+
 **R6 is the only path to the student's attention in the entire system.**
 
 Three properties fall out of doing it this way, and each is a deliverable rather
 than a claim:
 
-- **It is explainable.** Every verdict cites the rule that produced it, in
-  language written for the student, and that string is shown on the card. She
-  can ask *"why am I seeing this?"* and get a real answer.
-- **It is reproducible.** The same finding on the same date always yields the
-  same verdict. The recorded demo and the test suite are therefore testing the
-  same thing.
-- **It is auditable.** Silence carries a reason too. `GateDecision.reason` is
-  populated whether or not anything was shown, so *"it did nothing"* is
-  inspectable rather than indistinguishable from a crash.
+| Property | Evidence |
+|---|---|
+| **Explainable** | Every verdict cites the rule that produced it, in language written for the student, and that string is shown on the card. She can ask *"why am I seeing this?"* and get a real answer. |
+| **Reproducible** | The same finding on the same date always yields the same verdict, so the recorded demo and the test suite test the same thing. |
+| **Auditable** | Silence carries a reason too: `GateDecision.reason` is populated whether or not anything was shown, so *"it did nothing"* is inspectable rather than indistinguishable from a crash. |
 
 ### The whitelist is where the safety lives
 
@@ -365,39 +375,35 @@ Seven actions ship: `register_modules`, `drop_module`, `resolve_library_hold`,
 `notify_advisor`.
 
 Each one **refuses** the way the real system refuses. Registering for
-*Econometrics II* while its prerequisite is unpassed returns:
+*Econometrics II* with its prerequisite unpassed returns:
 
 ```json
 {"error": "ECON30010 requires ECON20030, which the student has not passed. Registration refused."}
 ```
 
-Registration checks unmet prerequisites, the term ECTS cap, seat availability
-and duplicate registration, and validates everything *before* mutating anything
-— so a refused registration takes no seat. `file_degree_plan` refuses a plan
-that would fail its own audit, which is what makes repair-then-file a forced
-sequence rather than a suggestion.
+Registration checks unmet prerequisites, the term ECTS cap, seat availability and
+duplicate registration — and validates everything *before* mutating anything, so
+a refused registration takes no seat. `file_degree_plan` refuses a plan that
+would fail its own audit, which makes repair-then-file a forced sequence rather
+than a suggestion.
 
-Every action that succeeds writes a receipt with a **deterministic**
-confirmation number, derived from the action and its arguments rather than a
-random value — so re-running the demo produces the same receipt. The receipts
-are the evidence: `data/receipts.jsonl` is an append-only record of everything
-Compass did, **including the things it did without asking**.
+Every successful action writes a receipt with a **deterministic** confirmation
+number, derived from the action and its arguments rather than a random value — so
+re-running the demo produces the same receipt. The receipts are the evidence:
+`data/receipts.jsonl` (created on first run, not checked in) is an append-only
+record of everything Compass did, **including the things it did without asking**.
 
 ### What Compass will not do
 
 Stated as limits, because a system like this is defined by its refusals:
 
-- **It will not spend the student's money.** Any action with a cost is a card,
-  never an automatic action.
-- **It will not change what she studies on its own initiative.** Switching
-  specialisation is offered, never taken.
-- **It will not contact a human for her** without her choosing to. Sending a
-  message to an advisor is irreversible in a way a plan repair is not, and the
-  receipt says so.
-- **It will not act on a low-confidence reading.** Below 0.70 the verdict is
-  silence, regardless of how bad the consequence would be if true.
-- **It will not interrupt about something it can fix later.** Recoverable
-  problems are handled in the background until they stop being recoverable.
+| It will not… | Because |
+|---|---|
+| **Spend the student's money** | Any action with a cost is a card, never an automatic action. |
+| **Change what she studies on its own initiative** | Switching specialisation is offered, never taken. |
+| **Contact a human for her** | Unless she chooses to. Sending a message to an advisor is irreversible in a way a plan repair is not, and the receipt says so. |
+| **Act on a low-confidence reading** | Below 0.70 the verdict is silence, however bad the consequence would be if true. |
+| **Interrupt about something it can fix later** | Recoverable problems are handled in the background until they stop being recoverable. |
 
 ---
 
@@ -434,12 +440,12 @@ first two directly:
 ```
 
 A payload with no `action` is read by what it contains: a bare `prompt` is a
-question, and nothing at all means a sweep.
+question, nothing at all means a sweep.
 
 `reset` exists because a live demo endpoint is consumed by its first visitor —
-once someone clears the library hold, the next person to look finds nothing to
-see. The generator is deterministic and the data is fabricated, so putting it
-back is honest. It is a **demo affordance, not part of the agent**.
+once someone clears the library hold, the next person to look finds nothing. The
+generator is deterministic and the data is fabricated, so putting it back is
+honest. It is a **demo affordance, not part of the agent**.
 
 Note the asymmetry between the first two, which is the design. A sweep is
 unattended, so it may only run the two whitelisted bookkeeping actions. A
@@ -492,7 +498,7 @@ Compass supports three backends and picks one from `COMPASS_PROVIDER`:
 account used for this deployment is under a new-account restriction on the
 Bedrock **data plane** — `ValidationException: Access to Bedrock models is not
 allowed for this account`, reported as `Error 002`. Isolating it showed the
-restriction is account-wide rather than model-specific: **Amazon Nova and Titan
+restriction is account-wide, not model-specific: **Amazon Nova and Titan
 fail identically**, in every region, under the account root's own credentials,
 while the Bedrock *control plane* answers 200 and the console Playground renders
 normally. That asymmetry is why the console can look healthy while every API call
@@ -512,8 +518,9 @@ python -m pytest tests -q      # 132 passed, no network, ~4s
 
 The suite never calls a model and never touches the checked-in `data/`: each test
 generates a fresh dataset in a temporary directory, and an autouse fixture strips
-AWS and provider credentials from the environment so the suite cannot behave
-differently on a machine that happens to be logged in.
+the AWS and provider-selection variables from the environment and redirects
+`HOME` to an empty directory — so the suite cannot behave differently on a
+machine that happens to be logged in.
 
 Three files are worth pointing at:
 
@@ -524,17 +531,16 @@ Three files are worth pointing at:
 - **[`test_bundle.py`](tests/test_bundle.py)** — builds the deployment bundle's
   layout in a temp directory and runs the entrypoint inside it with a stripped
   environment. It exists because the MCP server runs as a **subprocess**, and a
-  child process inherits the environment rather than the parent's `sys.path` — so
-  a fix that only patched `sys.path` would pass every local test and fail on the
-  first real invocation. That is a deployment bug no amount of ordinary local
-  testing finds.
+  child process inherits the environment, not the parent's `sys.path` — so a fix
+  that only patched `sys.path` would pass every local test and fail on the first
+  real invocation: a deployment bug no amount of ordinary local testing finds.
 
   The assertion is on the **environment the entrypoint builds**, not on the
   integration: removing the `PYTHONPATH` export and re-running the integration
   check *still succeeds*, because the child process starts with normal `site`
   processing and an editable install resolves the import anyway. **A test that
   passes with the fix removed is not a test**, so the invariant is asserted where
-  it is actually load-bearing and the integration half is labelled as the smoke
+  it is actually load-bearing, and the integration half is labelled the smoke
   test it is.
 
 - **[`test_remote.py`](tests/test_remote.py)** — pins the wire contract between
@@ -598,12 +604,11 @@ convenience.
 The scenarios depend on specific rule readings: a withdrawn waiver, a hold that
 escalates on a particular date, a double-count rule. Building them onto a real
 university's handbook would mean shipping a document that **asserts things about
-a real institution's regulations**. Those assertions would be wrong the moment
-the institution changed a rule, and wrong in a way that could mislead a real
-student.
+a real institution's regulations** — assertions that go wrong the moment the
+institution changes a rule, and wrong in a way that could mislead a real student.
 
-A fictional institution makes the demo honest: everything in it is true about
-the fictional world, and nothing in it is a claim about yours.
+A fictional institution makes the demo honest: everything in it is true about the
+fictional world, and nothing in it is a claim about yours.
 
 </details>
 
@@ -651,22 +656,12 @@ prerequisite chain, a deadline that escalates, a double-count. See the
 
 ## 🗺 Roadmap
 
-**Rule shapes, not one programme.** The vocabulary of rules is currently a single
-Economics programme. The question worth answering is whether the *shapes*
-generalise — and I think they do, because the generator is already parameterised
-by requirement group and the gate is domain-blind.
-
-**Rules that are not written down.** Sentinel currently reasons over rules that
-appear in the handbook. The harder and more valuable version reasons over the
-ones that don't — the pattern that says *"the School may, at its discretion"*.
-
-**More than one student.** The current demo follows a single record. The gate,
-the whitelist and the receipt log are all per-student already, and the receipt
-log is the piece an access office would actually want: an audit trail of what
-the agent did on its own, and why.
-
-**Event-driven instead of swept.** The sweep is currently on demand; a term-long
-deployment would run it on a calendar trigger and on handbook-change detection.
+| Direction | The argument |
+|---|---|
+| **Rule shapes, not one programme** | The vocabulary of rules is currently a single Economics programme. The question worth answering is whether the *shapes* generalise — and I think they do, because the generator is already parameterised by requirement group and the gate is domain-blind. |
+| **Rules that are not written down** | Sentinel currently reasons over rules that appear in the handbook. The harder and more valuable version reasons over the ones that don't — the pattern that says *"the School may, at its discretion"*. |
+| **More than one student** | The current demo follows a single record. The gate, the whitelist and the receipt log are all per-student already, and the receipt log is the piece an access office would actually want: an audit trail of what the agent did on its own, and why. |
+| **Event-driven instead of swept** | The sweep is currently on demand; a term-long deployment would run it on a calendar trigger and on handbook-change detection. |
 
 ---
 
@@ -675,6 +670,8 @@ deployment would run it on a calendar trigger and on handbook-change detection.
 | Document | What is in it |
 |---|---|
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | How it is put together, and *why* — including alternatives considered and rejected |
+| [`ARCHITECTURE.review-20260918.md`](ARCHITECTURE.review-20260918.md) | The audit that produced the architecture doc: what was deep, what was shallow, what is still wrong |
+| [`CLAUDE.md`](CLAUDE.md) | Orientation for an AI agent working in this repo — where things live and which traps to avoid |
 | [`docs/DEVPOST.md`](docs/DEVPOST.md) | The submission copy: problem, audience, three demo scenarios |
 | [`docs/VIDEO.md`](docs/VIDEO.md) | Demo video shot list |
 | [`docs/blog/01`](docs/blog/01-agents-for-humans-silence-by-default.md) | Silence by default: refusing to let the model decide when to speak |
